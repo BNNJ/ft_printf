@@ -83,7 +83,7 @@ void	ftpf_get_size_flag(t_par *p, const char **format)
 			if (p->e_mod == H)
 				p->e_mod = HH;
 			else
-				p->e_mod = p->e_mod <= NONE ? L : p->e_mod;
+				p->e_mod = p->e_mod <= NONE ? H : p->e_mod;
 		}
 		else if (**format == 'j')
 			p->e_mod = p->e_mod <= LL ? J : p->e_mod;

@@ -12,7 +12,8 @@
 
 #include "ft_printf.h"
 
-void				ftpf_umaxtoa_base(uintmax_t nb, size_t len, t_par *p, t_buf *buf)
+void				ftpf_umaxtoa_base(uintmax_t nb, size_t len,
+	t_par *p, t_buf *buf)
 {
 	int			i;
 	char		buffer[UINTMAX_WIDTH];
@@ -78,6 +79,8 @@ static uintmax_t	ftpf_convert_unsigned(t_par *p, va_list ap)
 		nb = (size_t)va_arg(ap, uintmax_t);
 	else if (p->e_mod == J)
 		nb = va_arg(ap, uintmax_t);
+	if (p->base == 10)
+		ft_memset(p->prefix, 0, 2);
 	return (nb);	
 }
 
@@ -135,7 +138,7 @@ int					ftpf_handle_int(t_par *p, va_list ap, t_buf *buf)
 	len = ftpf_setup_int(nb, p);
 	if (p->flags & F_WIDTH)
 		ftpf_buffer_fill(buf, ' ', p->width);
-	if (nb != 0)
+	if (nb != 0 || p->flags & F_PLUS || p->flags & F_SPACE)
 		ftpf_buffer_literal(p->prefix, buf);
 	if (p->flags & F_ZERO)
 		ftpf_buffer_fill(buf, '0', p->width);
