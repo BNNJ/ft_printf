@@ -118,15 +118,19 @@ int				ftpf_handle_wstr(t_par *p, va_list ap, t_buf *buf);
 int				ftpf_handle_str(t_par *p, va_list ap, t_buf *buf);
 
 /*
-** handler_int.c && converter_int.c
+** handler_int.c
 */
 
 int				ftpf_handle_int(t_par *p, va_list ap, t_buf *buf);
-
-uintmax_t		ftpf_convert_unsigned(t_par *p, va_list ap);
-uintmax_t		ftpf_convert_int(t_par *p, va_list ap);
 void			ftpf_umaxtoa_base(uintmax_t nb, size_t len,
 	t_par *p, t_buf *buf);
+
+/*
+** handler_float.c
+*/
+
+int				ftpf_handle_float(t_par *p, va_list ap, t_buf *buf);
+
 
 /*
 ** handler_ptr.c

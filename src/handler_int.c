@@ -12,6 +12,75 @@
 
 #include "ft_printf.h"
 
+void				ftpf_umaxtoa_base(uintmax_t nb, size_t len, t_par *p, t_buf *buf)
+{
+	int			i;
+	char		buffer[UINTMAX_WIDTH];
+	char		base[16];
+	
+	i = UINTMAX_WIDTH;
+	ft_memcpy(base, p->type >= 'A' && p->type <= 'Z' ? UCBASE : LCBASE, 16);
+	if (p->precision > len)
+	{
+		ftpf_buffer_fill(buf, '0', p->precision - len);
+		p->precision -= (p->precision - len);
+	}
+	while (p->precision)
+	{
+		buffer[--i] = base[nb % p->base];
+		nb /= p->base;
+		--p->precision;
+	}
+	ftpf_buffer_copy(buffer + i, buf, UINTMAX_WIDTH - i);
+}
+
+static uintmax_t	ftpf_convert_int(t_par *p, va_list ap)
+{
+	intmax_t	nb;
+	uintmax_t	unb;
+
+	nb = 0;
+	if (p->e_mod == HH)
+		nb = (char)va_arg(ap, int);
+	else if (p->e_mod == H)
+		nb = (short)va_arg(ap, int);
+	else if (p->e_mod == NONE)
+		nb = va_arg(ap, int);
+	else if (p->e_mod == L)
+		nb = (long)va_arg(ap, intmax_t);
+	else if (p->e_mod == LL)
+		nb = (long long)va_arg(ap, intmax_t);
+	else if (p->e_mod == Z)
+		nb = (ssize_t)va_arg(ap, intmax_t);
+	else if (p->e_mod == J)
+		nb = va_arg(ap, intmax_t);
+	unb = (nb >= 0) ? nb : -nb;
+	p->prefix[0] = nb < 0 ? '-' : p->prefix[0];
+	return (unb);
+}
+
+static uintmax_t	ftpf_convert_unsigned(t_par *p, va_list ap)
+{
+	uintmax_t	nb;
+
+	nb = 0;
+	if (p->e_mod == HH)
+		nb = (unsigned char)va_arg(ap, unsigned int);
+	else if (p->e_mod == H)
+		nb = (unsigned short)va_arg(ap, unsigned int);
+	else if (p->e_mod == NONE)
+		nb = va_arg(ap, unsigned int);
+	else if (p->e_mod == L)
+		nb = (unsigned long)va_arg(ap, uintmax_t);
+	else if (p->e_mod == LL)
+		nb = (unsigned long long)va_arg(ap, uintmax_t);
+	else if (p->e_mod == Z)
+		nb = (size_t)va_arg(ap, uintmax_t);
+	else if (p->e_mod == J)
+		nb = va_arg(ap, uintmax_t);
+	return (nb);	
+}
+
 /*
 ** Sets the precision to be used in umaxtoa_base() by first picking either
 ** p->precision or len (the number of digits in nb) depending on which is bigger
@@ -26,7 +95,7 @@
 ** the other bases : The man says it's done like that, so i did it like that.
 */
 
-static size_t	ftpf_int_setup(uintmax_t nb, t_par *p)
+static size_t		ftpf_setup_int(uintmax_t nb, t_par *p)
 {
 	size_t		len;
 	uintmax_t	tmp;
@@ -54,7 +123,7 @@ static size_t	ftpf_int_setup(uintmax_t nb, t_par *p)
 	return (len);
 }
 
-int				ftpf_handle_int(t_par *p, va_list ap, t_buf *buf)
+int					ftpf_handle_int(t_par *p, va_list ap, t_buf *buf)
 {
 	uintmax_t	nb;
 	size_t		len;
@@ -63,8 +132,7 @@ int				ftpf_handle_int(t_par *p, va_list ap, t_buf *buf)
 		? ftpf_convert_unsigned(p, ap) : ftpf_convert_int(p, ap);
 	if (p->flags & F_BIN)
 		return (ftpf_handle_bin(&nb, p, buf));
-	len = ftpf_int_setup(nb, p);
-	printf("%zd\n", p->width);
+	len = ftpf_setup_int(nb, p);
 	if (p->flags & F_WIDTH)
 		ftpf_buffer_fill(buf, ' ', p->width);
 	if (nb != 0)

@@ -14,18 +14,6 @@
 
 static t_fct	g_functable[127] = {NULL};
 
-int				ftpf_handle_float(t_par *p, va_list ap, t_buf *buf)
-{
-	(void)(p);
-	(void)(buf);
-	return 0;
-}
-
-int				no_conv(void)
-{
-	return 0;
-}
-
 static void		function_factory(void)
 {
 	g_functable['i'] = ftpf_handle_int;
@@ -49,6 +37,16 @@ static void		function_factory(void)
 	g_functable['P'] = ftpf_handle_ptr;
 }
 
+static int		no_conv(t_par *p, t_buf *buf)
+{
+	if (p->flags & F_WIDTH && !(p->flags & F_MINUS))
+		ftpf_buffer_fill(buf, p->flags & F_ZERO ? '0' : ' ', p->width - 1);
+	ftpf_buffer_fill(buf, p->type, 1);
+	if (p->flags & F_WIDTH && p->flags & F_MINUS)
+		ftpf_buffer_fill(buf, ' ', p->width - 1);
+	return (1);
+}
+
 static int		ftpf_majortom(const char **format, t_par *p,
 	t_buf *buf, va_list ap)
 {
@@ -59,7 +57,7 @@ static int		ftpf_majortom(const char **format, t_par *p,
 	ftpf_get_size_flag(p, format);
 	ftpf_get_type(p, format);
 	return (!g_functable[p->type]
-		? no_conv()
+		? no_conv(p, buf)
 		: g_functable[p->type](p, ap, buf));
 }
 
