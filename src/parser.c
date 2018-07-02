@@ -77,6 +77,6 @@ int				ftpf_groundcontrol(const char *format, va_list ap)
 			if (!(ftpf_majortom(&format, &p, &buf, ap)))
 				return (-1);
 	}
-	write(1, buf.content, buf.cursor);
+	buf.ret += write(1, buf.content, buf.cursor);
 	return (buf.ret);
 }

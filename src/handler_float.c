@@ -65,7 +65,6 @@ static void			ftpf_ftoa(double f, size_t len, t_par *p, t_buf *buf)
 	tmp = p->precision;
 	p->precision = len;
 	f = f < 0 ? -f : f;
-	printf("&& %ju &&\n", (uintmax_t)f);
 	ftpf_umaxtoa_base((uintmax_t)f, len, p, buf);
 	p->precision = tmp;
 	if (p->precision > 0 || p->flags & F_HASH)
