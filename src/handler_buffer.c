@@ -55,12 +55,11 @@ void	ftpf_buffer_fill(t_buf *buf, char c, size_t size)
 	{
 		if (buf->cursor == BUFFSIZE)
 		{
-			write(1, buf->content, BUFFSIZE);
+			buf->ret += write(1, buf->content, BUFFSIZE);
 			buf->cursor = 0;
 		}
 		buf->content[buf->cursor] = c;
 		++buf->cursor;
-		++buf->ret;
 		--size;
 	}
 }
