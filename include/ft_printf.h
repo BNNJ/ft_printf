@@ -15,7 +15,7 @@
 
 # define LINUX_MODE 0
 # define COLOR_ENABLED 1
-# define BUFFSIZE 128
+# define BUFFSIZE 101
 
 # ifndef UINTMAX_WIDTH
 #  define UINTMAX_WIDTH sizeof(uintmax_t) * 8
