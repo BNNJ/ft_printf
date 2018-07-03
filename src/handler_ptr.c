@@ -17,24 +17,22 @@ int		ftpf_handle_ptr(t_par *p, va_list ap, t_buf *buf)
 	void			*ptr;
 	size_t			len;
 	unsigned long	tmp;
-	
+
 	len = 1;
 	ptr = va_arg(ap, void*);
-	if (LINUX_MODE && ptr == NULL)
-	{
-		ftpf_buffer_copy("(nil)", buf, 0);
-		return (1);
-	}
 	tmp = (unsigned long)ptr;
 	while (tmp /= 16)
 		++len;
-	p->precision = len;
-	p->width = p->width > len ? p->width - len : 0;
-	if (p->flags & F_WIDTH && !(p->flags & F_MINUS))
+	p->precision = p->precision > len || (p->flags & F_PRECI && !ptr)
+		? p->precision : len;
+	p->width = p->width > len + 2 ? p->width - len - 2 : 0;
+	if (p->flags & F_WIDTH)
 		ftpf_buffer_fill(buf, ' ', p->width);
 	ftpf_buffer_copy(p->type == 'p' ? "0x" : "0X", buf, 2);
+	if (p->flags & F_ZERO)
+		ftpf_buffer_fill(buf, '0', p->width);
 	ftpf_umaxtoa_base((unsigned long)ptr, len, p, buf);
-	if (p->flags & F_WIDTH && p->flags & F_MINUS)
+	if (p->flags & F_MINUS)
 		ftpf_buffer_fill(buf, ' ', p->width);
 	return (1);
 }

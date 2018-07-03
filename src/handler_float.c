@@ -73,11 +73,6 @@ static void			ftpf_ftoa(double f, size_t len, t_par *p, t_buf *buf)
 	ftpf_umaxtoa_base(dec, p->precision, p, buf);
 }
 
-/*
-** Sets up precision and width, 
-** and cleans up the width flags to make ftpf_handle_float() easier on the eye.
-*/
-
 static size_t		ftpf_setup_float(double f, t_par *p)
 {
 	size_t		len;
@@ -94,13 +89,6 @@ static size_t		ftpf_setup_float(double f, t_par *p)
 	minus = f < 0;
 	p->width = p->width > len + p->precision + minus + dot
 		? p->width - len - p->precision - minus - dot : 0;
-	if (p->flags & F_ZERO
-		&& (!(p->flags & F_WIDTH) || p->flags & F_MINUS))
-		p->flags &= ~F_ZERO;
-	if (p->flags & F_MINUS && !(p->flags & F_WIDTH))
-		p->flags &= ~F_MINUS;
-	if (p->flags & F_ZERO || p->flags & F_MINUS)
-		p->flags &= ~F_WIDTH;
 	return (len);
 }
 
@@ -111,8 +99,11 @@ int					ftpf_handle_float(t_par *p, va_list ap, t_buf *buf)
 
 	f = va_arg(ap, double);
 	if (p->flags & F_BIN)
-		return (p->type == 'F' ? ftpf_handle_bin(&f, p, buf)
+	{
+		return (p->type == 'F'
+			? ftpf_handle_bin(&f, p, buf)
 			: ftpf_handle_bin((float*)&f, p, buf));
+	}
 	len = ftpf_setup_float(f, p);
 	if (p->flags & F_WIDTH)
 		ftpf_buffer_fill(buf, ' ', p->width);

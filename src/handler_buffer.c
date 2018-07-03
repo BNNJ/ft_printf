@@ -12,12 +12,31 @@
 
 #include "ft_printf.h"
 
-int		ftpf_buffer_literal(const char *str, t_buf *buf)
+int		ftpf_buffer_literal2(const char *str, t_buf *buf)
 {
 	int	i;
 
 	i = 0;
 	while (str[i] && str[i] != '%')
+	{
+		if (buf->cursor == BUFFSIZE)
+		{
+			buf->ret += write(1, buf->content, BUFFSIZE);
+			buf->cursor = 0;
+		}
+		buf->content[buf->cursor] = str[i];
+		++buf->cursor;
+		++i;
+	}
+	return (i);
+}
+
+int		ftpf_buffer_literal(const char *str, t_buf *buf)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
 	{
 		if (buf->cursor == BUFFSIZE)
 		{

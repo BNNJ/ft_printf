@@ -15,7 +15,7 @@
 
 # define LINUX_MODE 0
 # define COLOR_ENABLED 1
-# define BUFFSIZE 101
+# define BUFFSIZE 128
 
 # ifndef UINTMAX_WIDTH
 #  define UINTMAX_WIDTH sizeof(uintmax_t) * 8
@@ -47,6 +47,7 @@ typedef struct	s_buf
 {
 	char		content[BUFFSIZE];
 	int			cursor;
+	char		*str;
 	int			ret;
 }				t_buf;
 
@@ -83,6 +84,7 @@ int				ft_printf(const char *format, ...);
 */
 
 int				ftpf_groundcontrol(const char *format, va_list ap);
+int				ftpf_handle_error(t_buf *buf, size_t size);
 
 /*
 ** parser_flags.c
@@ -97,7 +99,7 @@ void			ftpf_get_type(t_par *p, const char **format);
 /*
 ** handler_buffer.c
 */
-
+int				ftpf_buffer_literal2(const char *str, t_buf *buf);
 int				ftpf_buffer_literal(const char *str, t_buf *buf);
 void			ftpf_buffer_copy(const char *str, t_buf *buf, int precision);
 void			ftpf_buffer_fill(t_buf *buf, char c, size_t size);
@@ -130,7 +132,6 @@ void			ftpf_umaxtoa_base(uintmax_t nb, size_t len,
 */
 
 int				ftpf_handle_float(t_par *p, va_list ap, t_buf *buf);
-
 
 /*
 ** handler_ptr.c

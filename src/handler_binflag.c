@@ -15,7 +15,7 @@
 int		ftpf_handle_bin(void *ptr, t_par *p, t_buf *buf)
 {
 	int	bits;
-	
+
 	if (p->type == 'c' || (p->type == 'C' && p->e_mod == H) || p->e_mod == HH)
 		bits = 8;
 	else if (p->e_mod == H && p->type != 'F' && p->type != 'f')

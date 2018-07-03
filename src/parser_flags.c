@@ -25,16 +25,23 @@ void	ftpf_get_format_flag(t_par *p, const char **format)
 		p->prefix[0] = ' ';
 	if (p->flags & F_PLUS)
 		p->prefix[0] = '+';
-
 }
 
 void	ftpf_get_width(t_par *p, const char **format, va_list ap)
 {
+	int		tmp;
+	char	repeat;
+
+	repeat = 0;
 	if (**format == '*')
 	{
-		p->width = va_arg(ap, int);
+		tmp = va_arg(ap, int);
+		if (tmp < 0)
+			p->flags |= F_MINUS;
+		p->width = tmp < 0 ? -tmp : tmp;
 		++*format;
 		p->flags |= F_WIDTH;
+		repeat = 1;
 	}
 	else if (**format >= '1' && **format <= '9')
 	{
@@ -42,26 +49,33 @@ void	ftpf_get_width(t_par *p, const char **format, va_list ap)
 		while (**format >= '0' && **format <= '9')
 			++*format;
 		p->flags |= F_WIDTH;
+		repeat = 1;
 	}
+	if (repeat)
+		ftpf_get_width(p, format, ap);
 }
 
 void	ftpf_get_precision(t_par *p, const char **format, va_list ap)
 {
+	int		tmp;
+
 	if (**format == '.')
 	{
 		++*format;
 		if (**format == '*')
 		{
-			p->precision = va_arg(ap, int);
+			tmp = va_arg(ap, int);
+			p->precision = tmp < 0 ? 0 : tmp;
+			p->flags |= tmp < 0 ? 0 : F_PRECI;
 			++*format;
 		}
 		else
 		{
 			p->precision = ft_atoi(*format);
-			while (**format >= '0' && **format <= '9')
+			while ((**format >= '0' && **format <= '9') || **format == '.')
 				++*format;
+			p->flags |= F_PRECI;
 		}
-		p->flags |= F_PRECI;
 	}
 }
 
@@ -100,19 +114,21 @@ void	ftpf_get_type(t_par *p, const char **format)
 	if (p->type == 'x' || p->type == 'X' || p->type == 'p' || p->type == 'P')
 	{
 		p->base = 16;
-		p->flags & F_HASH
-			? ft_memcpy(p->prefix, p->type >= 'a' ? "0x" : "0X", 2)
-			: 0;
+		p->flags |= p->type == 'p' || p->type == 'P' ? F_HASH : 0;
+		if (p->flags & F_HASH)
+			ft_memcpy(p->prefix, p->type >= 'a' ? "0x" : "0X", 2);
+		else
+			p->prefix[0] = 0;
 	}
 	else if (p->type == 'o' || p->type == 'O')
 		p->base = 8;
 	else if (p->type == 'b' || p->type == 'B')
 	{
 		p->base = 2;
-		p->flags & F_HASH && p->type == 'b'? ft_memcpy(p->prefix, "0b", 2) : 0;
+		p->flags & F_HASH && p->type == 'b' ? ft_memcpy(p->prefix, "0b", 2) : 0;
 	}
 	else
 		p->base = 10;
-	if ((ft_findchar("CSDOU", p->type) >= 0) && p->e_mod <= NONE)
+	if ((ft_findchar("SDOU", p->type) >= 0) && p->e_mod <= NONE)
 		p->e_mod = L;
 }

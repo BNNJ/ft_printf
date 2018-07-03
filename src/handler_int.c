@@ -18,7 +18,7 @@ void				ftpf_umaxtoa_base(uintmax_t nb, size_t len,
 	int			i;
 	char		buffer[UINTMAX_WIDTH];
 	char		base[16];
-	
+
 	i = UINTMAX_WIDTH;
 	ft_memcpy(base, p->type >= 'A' && p->type <= 'Z' ? UCBASE : LCBASE, 16);
 	if (p->precision > len)
@@ -81,7 +81,7 @@ static uintmax_t	ftpf_convert_unsigned(t_par *p, va_list ap)
 		nb = va_arg(ap, uintmax_t);
 	if (p->base == 10)
 		ft_memset(p->prefix, 0, 2);
-	return (nb);	
+	return (nb);
 }
 
 /*
@@ -89,11 +89,7 @@ static uintmax_t	ftpf_convert_unsigned(t_par *p, va_list ap)
 ** p->precision or len (the number of digits in nb) depending on which is bigger
 ** then adds 1 for octal base if F_HASH has been enabled.
 ** Of course, zero being an exception, we get this mess of conditionals.
-** Then, disables width flags depending on where we want the padding to be added
-** F_WIDTH : padding, prefix, number
-** F_ZERO : prefix, padding, number
-** F_MINUS : prefix, number, padding
-** This is only done to make ftpf_handle_int clearer.
+**
 ** Don't ask me why i handled it like that instead of using the prefix like
 ** the other bases : The man says it's done like that, so i did it like that.
 */
@@ -111,18 +107,11 @@ static size_t		ftpf_setup_int(uintmax_t nb, t_par *p)
 		p->precision = len;
 	else if (p->precision != 0 || nb != 0)
 		p->precision = p->precision > len ? p->precision : len;
-	p->precision += !(p->flags & F_PRECI) && nb == 0 ? 0
-		: p->flags & F_HASH && len >= p->precision
-		&& (p->type == 'o' || p->type == 'O');
-	tmp = nb ? p->precision + ft_strlen(p->prefix) : p->precision;
+	p->precision += (p->type == 'o' || p->type == 'O') && p->flags & F_HASH
+		&& len >= p->precision && !(!nb && p->precision);
+	tmp = nb || p->flags & F_PLUS || p->flags & F_SPACE
+		? p->precision + ft_strlen(p->prefix) : p->precision;
 	p->width = p->width > tmp ? p->width - tmp : 0;
-	if (p->flags & F_ZERO
-		&& (p->flags & F_PRECI || !(p->flags & F_WIDTH) || p->flags & F_MINUS))
-		p->flags &= ~F_ZERO;
-	if (p->flags & F_MINUS && !(p->flags & F_WIDTH))
-		p->flags &= ~F_MINUS;
-	if (p->flags & F_ZERO || p->flags & F_MINUS)
-		p->flags &= ~F_WIDTH;
 	return (len);
 }
 
@@ -138,7 +127,8 @@ int					ftpf_handle_int(t_par *p, va_list ap, t_buf *buf)
 	len = ftpf_setup_int(nb, p);
 	if (p->flags & F_WIDTH)
 		ftpf_buffer_fill(buf, ' ', p->width);
-	if (nb != 0 || p->flags & F_PLUS || p->flags & F_SPACE)
+	if (!(p->type == 'o' || p->type == 'O'
+		|| (!nb && (p->type == 'x' || p->type == 'X'))))
 		ftpf_buffer_literal(p->prefix, buf);
 	if (p->flags & F_ZERO)
 		ftpf_buffer_fill(buf, '0', p->width);
@@ -147,3 +137,10 @@ int					ftpf_handle_int(t_par *p, va_list ap, t_buf *buf)
 		ftpf_buffer_fill(buf, ' ', p->width);
 	return (1);
 }
+
+/*
+	p->precision += !(p->flags & F_PRECI) && nb == 0
+		? 0
+		: p->flags & F_HASH && len >= p->precision
+		&& (p->type == 'o' || p->type == 'O');
+*/
