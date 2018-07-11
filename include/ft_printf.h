@@ -71,6 +71,30 @@ typedef struct	s_par
 	}			e_mod;
 }				t_par;
 
+typedef struct	s_disp
+{
+	enum
+	{
+		BLACK,
+		RED,
+		GREEN,
+		YELLOW,
+		BLUE,
+		MAGENTA,
+		CYAN,
+		WHITE,
+		NO_COLOR
+	}			e_color;
+	enum
+	{	
+		NO_MODE,
+		BOLD,
+		FAINT,
+		ITALIC,
+		UNDERLINE
+	}			e_style;
+}				t_disp;
+
 typedef int		(*t_fct)(t_par*, va_list, t_buf*);
 
 /*
@@ -84,7 +108,6 @@ int				ft_printf(const char *format, ...);
 */
 
 int				ftpf_groundcontrol(const char *format, va_list ap);
-int				ftpf_handle_error(t_buf *buf, size_t size);
 
 /*
 ** parser_flags.c
@@ -99,10 +122,16 @@ void			ftpf_get_type(t_par *p, const char **format);
 /*
 ** handler_buffer.c
 */
-int				ftpf_buffer_literal2(const char *str, t_buf *buf);
+
 int				ftpf_buffer_literal(const char *str, t_buf *buf);
 void			ftpf_buffer_copy(const char *str, t_buf *buf, int precision);
 void			ftpf_buffer_fill(t_buf *buf, char c, size_t size);
+
+/*
+** handler_display.c
+*/
+
+int				ftpf_handle_display(const char **format, t_buf *buf, int len);
 
 /*
 ** handler_char.c
@@ -111,6 +140,8 @@ void			ftpf_buffer_fill(t_buf *buf, char c, size_t size);
 int				ftpf_convert_wchar(wchar_t c, char *str);
 int				ftpf_handle_wchar(t_par *p, va_list ap, t_buf *buf);
 int				ftpf_handle_char(t_par *p, va_list ap, t_buf *buf);
+char			ftpf_wchar_len(wchar_t c);
+
 
 /*
 ** handler_str.c
@@ -138,6 +169,7 @@ int				ftpf_handle_float(t_par *p, va_list ap, t_buf *buf);
 */
 
 int				ftpf_handle_ptr(t_par *p, va_list ap, t_buf *buf);
+int				ftpf_handle_n(t_par *p, va_list ap, t_buf *buf);
 
 /*
 ** handler_binflag.c

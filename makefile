@@ -9,6 +9,7 @@ SRC				=	ft_printf.c			\
 					handler_binflag.c	\
 					handler_buffer.c	\
 					handler_char.c		\
+					handler_display.c	\
 					handler_float.c		\
 					handler_int.c		\
 					handler_ptr.c		\

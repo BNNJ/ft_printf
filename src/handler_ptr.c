@@ -36,3 +36,24 @@ int		ftpf_handle_ptr(t_par *p, va_list ap, t_buf *buf)
 		ftpf_buffer_fill(buf, ' ', p->width);
 	return (1);
 }
+
+int		ftpf_handle_n(t_par *p, va_list ap, t_buf *buf)
+{
+	buf->ret += write(1, buf->content, buf->cursor);
+	buf->cursor = 0;
+	if (p->e_mod == H)
+		*va_arg(ap, char*) = (char)buf->ret;
+	else if (p->e_mod == HH)
+		*va_arg(ap, short*) = (short)buf->ret;
+	else if (p->e_mod == L)
+		*va_arg(ap, long*) = (long)buf->ret;
+	else if (p->e_mod == LL)
+		*va_arg(ap, long long*) = (long long)buf->ret;
+	else if (p->e_mod == Z)
+		*va_arg(ap, ssize_t*) = (ssize_t)buf->ret;
+	else if (p->e_mod == J)
+		*va_arg(ap, uintmax_t*) = (uintmax_t)buf->ret;
+	else
+		*va_arg(ap, int*) = (int)buf->ret;
+	return (1);
+}

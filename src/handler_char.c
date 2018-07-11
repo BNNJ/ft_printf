@@ -41,21 +41,16 @@ int			ftpf_convert_wchar(wchar_t c, char *str)
 	return (1);
 }
 
-static char	ftpf_wchar_len(wchar_t c, t_par *p)
+char		ftpf_wchar_len(wchar_t c)
 {
 	char	len;
 
-	if (c < -1 || c > 0x10ffff || (c >= 0xd800 && c <= 0xdfff))
-		return (0);
-	else if (c <= 0x7f || (MB_CUR_MAX == 1 && c <= 0xFF))
+	if (c <= 0xff && MB_CUR_MAX == 1)
 		len = 1;
-	else if (c <= 0x7ff && MB_CUR_MAX >= 2)
-		len = 2;
-	else if (c <= 0xffff && MB_CUR_MAX >= 3)
-		len = 3;
 	else
-		len = (c <= 0x10ffff && MB_CUR_MAX >= 4) ? 4 : 0;
-	return (len >= p->precision ? len : 0);
+		len = 1 + (c > 0x7f) + (c > 0x7ff) + (c > 0xffff);
+	return ((c < -1 || c > 0x10ffff || (c >= 0xd800 && c <= 0xdfff)
+		|| len > MB_CUR_MAX) ? -1 : len);
 }
 
 int			ftpf_handle_wchar(t_par *p, va_list ap, t_buf *buf)
@@ -70,14 +65,14 @@ int			ftpf_handle_wchar(t_par *p, va_list ap, t_buf *buf)
 		return (ftpf_handle_bin(&c, p, buf));
 	else
 	{
-		if (!(len = ftpf_convert_wchar(c, tmp)))
+		if (!(ftpf_convert_wchar(c, tmp)))
 			return (0);
-//		len = ftpf_wchar_len(c, p);
+		len = ftpf_wchar_len(c);
 		if ((p->flags & F_WIDTH || p->flags & F_ZERO) && p->width >= len)
 			ftpf_buffer_fill(buf, p->flags & F_ZERO ? '0' : ' ',
 				p->width - len);
 		c == 0 ? ftpf_buffer_fill(buf, 0, 1)
-			: ftpf_buffer_literal((const char*)tmp, buf);
+			: ftpf_buffer_copy((const char*)tmp, buf, len);
 		if (p->flags & F_MINUS && p->width >= len)
 			ftpf_buffer_fill(buf, ' ', p->width - len);
 	}

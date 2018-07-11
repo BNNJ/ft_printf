@@ -30,18 +30,14 @@ void	ftpf_get_format_flag(t_par *p, const char **format)
 void	ftpf_get_width(t_par *p, const char **format, va_list ap)
 {
 	int		tmp;
-	char	repeat;
 
-	repeat = 0;
 	if (**format == '*')
 	{
 		tmp = va_arg(ap, int);
-		if (tmp < 0)
-			p->flags |= F_MINUS;
+		p->flags |= tmp < 0 ? F_MINUS + F_WIDTH : F_WIDTH;
 		p->width = tmp < 0 ? -tmp : tmp;
 		++*format;
-		p->flags |= F_WIDTH;
-		repeat = 1;
+		ftpf_get_width(p, format, ap);
 	}
 	else if (**format >= '1' && **format <= '9')
 	{
@@ -49,10 +45,9 @@ void	ftpf_get_width(t_par *p, const char **format, va_list ap)
 		while (**format >= '0' && **format <= '9')
 			++*format;
 		p->flags |= F_WIDTH;
-		repeat = 1;
-	}
-	if (repeat)
 		ftpf_get_width(p, format, ap);
+	}
+	ftpf_get_format_flag(p, format);
 }
 
 void	ftpf_get_precision(t_par *p, const char **format, va_list ap)
@@ -77,6 +72,7 @@ void	ftpf_get_precision(t_par *p, const char **format, va_list ap)
 			p->flags |= F_PRECI;
 		}
 	}
+	ftpf_get_format_flag(p, format);
 }
 
 void	ftpf_get_size_flag(t_par *p, const char **format)
@@ -105,6 +101,7 @@ void	ftpf_get_size_flag(t_par *p, const char **format)
 			p->e_mod = Z;
 		++*format;
 	}
+	ftpf_get_format_flag(p, format);
 }
 
 void	ftpf_get_type(t_par *p, const char **format)
