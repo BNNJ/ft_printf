@@ -55,10 +55,7 @@ int			ftpf_buffer_literal(const char *str, t_buf *buf)
 	while (str[i] && str[i] != '%')
 	{
 		if (buf->cursor == BUFFSIZE)
-		{
-			buf->ret += write(1, buf->content, BUFFSIZE);
-			buf->cursor = 0;
-		}
+			ftpf_buffer_flush(buf);
 		buf->content[buf->cursor] = str[i];
 		++buf->cursor;
 		++i;
@@ -78,10 +75,7 @@ void		ftpf_buffer_copy(const char *str, t_buf *buf, int precision)
 	while (i < precision && str[i])
 	{
 		if (buf->cursor == BUFFSIZE)
-		{
-			buf->ret += write(1, buf->content, BUFFSIZE);
-			buf->cursor = 0;
-		}
+			ftpf_buffer_flush(buf);
 		buf->content[buf->cursor] = str[i];
 		++buf->cursor;
 		++i;
@@ -97,10 +91,7 @@ void		ftpf_buffer_fill(t_buf *buf, char c, size_t size)
 	while (size > 0)
 	{
 		if (buf->cursor == BUFFSIZE)
-		{
-			buf->ret += write(1, buf->content, BUFFSIZE);
-			buf->cursor = 0;
-		}
+			ftpf_buffer_flush(buf);
 		buf->content[buf->cursor] = c;
 		++buf->cursor;
 		--size;

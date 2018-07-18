@@ -5,104 +5,105 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: pfragnou <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/07/18 17:50:56 by pfragnou          #+#    #+#             */
-/*   Updated: 2018/07/18 17:51:00 by pfragnou         ###   ########.fr       */
+/*   Created: 2018/07/18 18:49:00 by pfragnou          #+#    #+#             */
+/*   Updated: 2018/07/18 18:49:01 by pfragnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-/*
-** Ain't that pretty ?
-*/
+static char	g_displaytable[18][10];
 
-static char	*ft_strnstr(const char *haystack, const char *needle, size_t len)
+static void	ftpf_init_table(void)
 {
-	if (!*needle)
-		return ((char*)haystack);
-	if (!*haystack || len == 0)
-		return (NULL);
-	return ((*needle == *haystack
-		&& ft_strnstr(haystack + 1, needle + 1, len - 1) == haystack + 1)
-		? (char*)haystack : ft_strnstr(haystack + 1, needle, len - 1));
+	ft_memcpy(g_displaytable[0], "reset", 5);
+	ft_memcpy(g_displaytable[1], "bold", 4);
+	ft_memcpy(g_displaytable[3], "italic", 6);
+	ft_memcpy(g_displaytable[4], "underline", 9);
+	ft_memcpy(g_displaytable[5], "/bold", 5);
+	ft_memcpy(g_displaytable[6], "/italic", 7);
+	ft_memcpy(g_displaytable[7], "/underline", 10);
+	ft_memcpy(g_displaytable[8], "black", 5);
+	ft_memcpy(g_displaytable[9], "red", 3);
+	ft_memcpy(g_displaytable[10], "green", 5);
+	ft_memcpy(g_displaytable[11], "yellow", 6);
+	ft_memcpy(g_displaytable[12], "blue", 4);
+	ft_memcpy(g_displaytable[13], "magenta", 7);
+	ft_memcpy(g_displaytable[14], "cyan", 4);
+	ft_memcpy(g_displaytable[15], "white", 5);
+	ft_memcpy(g_displaytable[16], "rgb", 3);
+	ft_memcpy(g_displaytable[17], "eoc", 3);
 }
 
-/*
-** Use enums for color and style
-*/
-
-static int	get_color(const char *format, int len)
+static int	ft_strncmp(const char *s1, const char *s2, size_t n)
 {
-	int		i;
-	char	table[8][7] = {"black",
-							"red",
-							"green",
-							"yellow",
-							"blue",
-							"magenta",
-							"cyan",
-							"white"};
+	if (n == 0)
+		return (0);
+	while (--n && *s1 && *s2 && *s1 == *s2)
+	{
+		++s1;
+		++s2;
+	}
+	return ((unsigned char)*s1 - (unsigned char)*s2);
+}
+
+static int	ftpf_get_option(const char **format)
+{
+	int	i;
+	int	len;
 
 	i = 0;
-	while (i < 8)
+	if ((len = ft_findchar(*format, ':')) < 0)
+		len = ft_findchar(*format, '}');
+	while (i <= 18)
 	{
-		if (ft_strnstr(format, table[i], len))
-			return (i);
+		if (!ft_strncmp(g_displaytable[i], *format, len))
+		{
+			*format += len;
+			if (i >= 0 && i <= 4)
+				return (i);
+			else if (i >= 5 && i <= 7)
+				return (i + 17);
+			else if (i >= 8 && i <= 17)
+				return (i + 22);
+		}
 		++i;
 	}
-	return (7);
+	return (-1);
 }
 
-/*
-** Only takes the first parameter encountered, which doesn't matter since
-** only one can be added in a single ANSI SGR code.
-** Also, it fucking sticks until an eoc flag. Gotta find a way around that.
-*/
-
-static int	get_style(const char *format, int len)
+static void	ftpf_buffer_display(t_buf *buf, int	option)
 {
-	int		i;
-	char	table[4][9] = {"bold",
-							"faint",
-							"italic",
-							"underline"};
-
-	i = 0;
-	while (i < 4)
+	if (option <= 9)
+		ftpf_buffer_fill(buf, option + '0', 1);
+	else
 	{
-		if (ft_strnstr(format, table[i], len))
-			return (i + 1);
-		++i;
+		ftpf_buffer_fill(buf, option / 10 + '0', 1);
+		ftpf_buffer_fill(buf, option % 10 + '0', 1);
 	}
-	return (0);
 }
-
-/*
-** Use strnstr to find color and style flags, or eoc. Nothing weird here.
-** \e[s;3cm] : s for style, c for color. simple place holders.
-** 3 is for regular foreground colors (30 to 37),
-** m is the ANSI graphic rendition control sequence identifier.
-** This is a very basic implementation,
-** i'd like to make it a bit more functional, by adding the possibility of
-** selecting multiple styles at once, and removing them independently.
-** The only way i found to do it so far is to print the codes everytime.
-** Working on an smart implementation for that.
-*/
 
 int			ftpf_handle_display(const char **format, t_buf *buf, int len)
 {
-	char	disp_code[7];
+	int		read;
+	int		option;
 
+	read = 0;
 	++*format;
-	if (ft_strnstr(*format, "eoc", len))
-		ftpf_buffer_copy("\e[m", buf, 3);
-	else
+	ftpf_init_table();
+	ftpf_buffer_copy("\e[", buf, 2);
+	while (**format != '}')
 	{
-		ft_memcpy(disp_code, "\e[s;3cm", 7);
-		disp_code[2] = get_style(*format, len) + '0';
-		disp_code[5] = get_color(*format, len) + '0';
-		ftpf_buffer_copy(disp_code, buf, 7);
+		if ((option = ftpf_get_option(format)) < 0)
+			break ;
+		ftpf_buffer_display(buf, option);
+		if (**format == ':')
+		{
+			ftpf_buffer_fill(buf, ';', 1);
+			++*format;
+		}
 	}
-	*format += len;
+	++*format;
+	ftpf_buffer_fill(buf, 'm', 1);
 	return (1);
 }

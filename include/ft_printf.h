@@ -72,30 +72,6 @@ typedef struct	s_par
 	}			e_mod;
 }				t_par;
 
-typedef struct	s_disp
-{
-	enum
-	{
-		BLACK,
-		RED,
-		GREEN,
-		YELLOW,
-		BLUE,
-		MAGENTA,
-		CYAN,
-		WHITE,
-		NO_COLOR
-	}			e_color;
-	enum
-	{	
-		NO_MODE,
-		BOLD,
-		FAINT,
-		ITALIC,
-		UNDERLINE
-	}			e_style;
-}				t_disp;
-
 typedef int		(*t_fct)(t_par*, va_list, t_buf*);
 
 /*
