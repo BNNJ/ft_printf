@@ -18,7 +18,7 @@ int		ft_printf(const char *format, ...)
 	int		ret;
 
 	va_start(ap, format);
-	ret = ftpf_groundcontrol(format, ap);
+	ret = ftpf_groundcontrol(format, ap, 0);
 	va_end(ap);
 	return (ret);
 }

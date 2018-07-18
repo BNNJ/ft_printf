@@ -21,10 +21,6 @@ void	ftpf_get_format_flag(t_par *p, const char **format)
 		p->flags |= (1 << i);
 		++*format;
 	}
-	if (p->flags & F_SPACE)
-		p->prefix[0] = ' ';
-	if (p->flags & F_PLUS)
-		p->prefix[0] = '+';
 }
 
 void	ftpf_get_width(t_par *p, const char **format, va_list ap)
@@ -47,7 +43,6 @@ void	ftpf_get_width(t_par *p, const char **format, va_list ap)
 		p->flags |= F_WIDTH;
 		ftpf_get_width(p, format, ap);
 	}
-	ftpf_get_format_flag(p, format);
 }
 
 void	ftpf_get_precision(t_par *p, const char **format, va_list ap)
@@ -72,7 +67,6 @@ void	ftpf_get_precision(t_par *p, const char **format, va_list ap)
 			p->flags |= F_PRECI;
 		}
 	}
-	ftpf_get_format_flag(p, format);
 }
 
 void	ftpf_get_size_flag(t_par *p, const char **format)
@@ -101,7 +95,6 @@ void	ftpf_get_size_flag(t_par *p, const char **format)
 			p->e_mod = Z;
 		++*format;
 	}
-	ftpf_get_format_flag(p, format);
 }
 
 void	ftpf_get_type(t_par *p, const char **format)

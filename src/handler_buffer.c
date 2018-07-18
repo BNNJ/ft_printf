@@ -12,7 +12,42 @@
 
 #include "ft_printf.h"
 
-int		ftpf_buffer_literal(const char *str, t_buf *buf)
+/*
+** ##########################################################################
+** Store characters into a buffer, and only flush it when it's full.
+** The content of the buffer is written in the case of the printf functions,
+** and stored into a string for the sprintf functions.
+** The number of characters flushed is added to buf->ret.
+** ##########################################################################
+*/
+
+static int	ftpf_strjoin(t_buf *buf)
+{
+	char	*new_str;
+
+	if (!(new_str = (char*)malloc(buf->ret + buf->cursor)))
+		return (0);
+	ft_memcpy(new_str, buf->str, buf->ret);
+	ft_memcpy(new_str + buf->ret, buf->cursor);
+	free(buf->str);
+	buf->str = new_str;
+	
+}
+
+void		ftpf_buffer_flush(t_buf *buf)
+{
+	if (buf->strmode)
+		buf->ret += ftpf_strjoin(buf);
+	else
+		buf->ret += write(1, buf->content, buf->cursor);
+	buf->cursor = 0;
+}
+
+/*
+** Add characters from str to the buffer, up to a null or % character
+*/
+
+int			ftpf_buffer_literal(const char *str, t_buf *buf)
 {
 	int	i;
 
@@ -31,7 +66,11 @@ int		ftpf_buffer_literal(const char *str, t_buf *buf)
 	return (i);
 }
 
-void	ftpf_buffer_copy(const char *str, t_buf *buf, int precision)
+/*
+** Add up to [precision] characters to the buffer, ot up to a null character
+*/
+
+void		ftpf_buffer_copy(const char *str, t_buf *buf, int precision)
 {
 	int	i;
 
@@ -49,7 +88,11 @@ void	ftpf_buffer_copy(const char *str, t_buf *buf, int precision)
 	}
 }
 
-void	ftpf_buffer_fill(t_buf *buf, char c, size_t size)
+/*
+** Add [size] character c to the buffer
+*/
+
+void		ftpf_buffer_fill(t_buf *buf, char c, size_t size)
 {
 	while (size > 0)
 	{

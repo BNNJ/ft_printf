@@ -70,7 +70,7 @@ static int	get_style(const char *format, int len)
 
 int			ftpf_handle_display(const char **format, t_buf *buf, int len)
 {
-	t_disp	display;
+//	t_disp	display;
 	char	disp_code[7];
 
 	++*format;
@@ -78,11 +78,9 @@ int			ftpf_handle_display(const char **format, t_buf *buf, int len)
 		ftpf_buffer_copy("\e[m", buf, 3);
 	else
 	{
-		display.e_style = get_style(*format, len);
-		display.e_color = get_color(*format, len);
 		ft_memcpy(disp_code, "\e[s;3cm", 7);
-		disp_code[2] = display.e_style + '0';
-		disp_code[5] = display.e_color + '0';
+		disp_code[2] = get_style(*format, len) + '0';
+		disp_code[5] = get_color(*format, len) + '0';
 		ftpf_buffer_copy(disp_code, buf, 7);
 	}
 	*format += len;

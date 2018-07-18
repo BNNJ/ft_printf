@@ -12,6 +12,13 @@
 
 #include "ft_printf.h"
 
+/*
+** Directly from int to buffer, makes things a bit simpler and faster.
+** The precision is handled there.
+** UCBASE : Upper case base, 0123456789ABCDEF
+** LCBASE : Lower case base, 0123456789abcdef
+*/
+
 void				ftpf_umaxtoa_base(uintmax_t nb, size_t len,
 	t_par *p, t_buf *buf)
 {
@@ -137,10 +144,3 @@ int					ftpf_handle_int(t_par *p, va_list ap, t_buf *buf)
 		ftpf_buffer_fill(buf, ' ', p->width);
 	return (1);
 }
-
-/*
-	p->precision += !(p->flags & F_PRECI) && nb == 0
-		? 0
-		: p->flags & F_HASH && len >= p->precision
-		&& (p->type == 'o' || p->type == 'O');
-*/

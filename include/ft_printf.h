@@ -18,7 +18,7 @@
 # define BUFFSIZE 128
 
 # ifndef UINTMAX_WIDTH
-#  define UINTMAX_WIDTH sizeof(uintmax_t) * 8
+#  define UINTMAX_WIDTH 64 * 8
 # endif
 
 # define UCBASE "0123456789ABCDEF"
@@ -48,6 +48,7 @@ typedef struct	s_buf
 	char		content[BUFFSIZE];
 	int			cursor;
 	char		*str;
+	char		strmode;
 	int			ret;
 }				t_buf;
 
@@ -107,7 +108,7 @@ int				ft_printf(const char *format, ...);
 ** parser.c
 */
 
-int				ftpf_groundcontrol(const char *format, va_list ap);
+int				ftpf_groundcontrol(const char *format, va_list ap, char opt);
 
 /*
 ** parser_flags.c
