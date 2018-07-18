@@ -49,6 +49,7 @@ static void		function_factory(void)
 /*
 ** if no conversion specifier is found, print the char that's where 
 ** the specifier should be. With width and precision applied to it.
+** Unless it's a null character.
 */
 
 static int		no_conv(t_par *p, t_buf *buf, const char **format)
