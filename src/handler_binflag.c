@@ -20,8 +20,8 @@
 ** (shift 0 positions to the left),
 ** checking for every bit if it's a 1 or 0,
 ** and adds the matching digit to the buffer.
-** Adds a space every 8 bits or, if the alternative display flag is enabled, 
-** after the sign bit then the exponent bits for floats and doubles. 
+** Adds a space every 8 bits or, if the alternative display flag is enabled,
+** after the sign bit then the exponent bits for floats and doubles.
 */
 
 int		ftpf_handle_bin(void *ptr, t_par *p, t_buf *buf)

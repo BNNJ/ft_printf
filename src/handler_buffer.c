@@ -31,7 +31,7 @@ static int	ftpf_strjoin(t_buf *buf)
 	ft_memcpy(new_str + buf->ret, buf->content, buf->cursor);
 	free(buf->str);
 	buf->str = new_str;
-	
+	return (1);
 }
 
 void		ftpf_buffer_flush(t_buf *buf)

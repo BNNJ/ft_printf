@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   handler_display.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: pfragnou <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/07/18 17:50:56 by pfragnou          #+#    #+#             */
+/*   Updated: 2018/07/18 17:51:00 by pfragnou         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ft_printf.h"
 
 /*
@@ -16,15 +28,21 @@ static char	*ft_strnstr(const char *haystack, const char *needle, size_t len)
 }
 
 /*
-** Use enums for color and style, 
+** Use enums for color and style
 */
 
 static int	get_color(const char *format, int len)
 {
 	int		i;
-	char	table[8][7] = {"black", "red", "green", "yellow",
-						"blue", "magenta", "cyan", "white"};
-	
+	char	table[8][7] = {"black",
+							"red",
+							"green",
+							"yellow",
+							"blue",
+							"magenta",
+							"cyan",
+							"white"};
+
 	i = 0;
 	while (i < 8)
 	{
@@ -44,7 +62,10 @@ static int	get_color(const char *format, int len)
 static int	get_style(const char *format, int len)
 {
 	int		i;
-	char	table[4][9] = {"bold", "faint", "italic", "underline"};
+	char	table[4][9] = {"bold",
+							"faint",
+							"italic",
+							"underline"};
 
 	i = 0;
 	while (i < 4)
@@ -62,7 +83,7 @@ static int	get_style(const char *format, int len)
 ** 3 is for regular foreground colors (30 to 37),
 ** m is the ANSI graphic rendition control sequence identifier.
 ** This is a very basic implementation,
-** i'd like to make it a bit more functional, by adding the possibility of 
+** i'd like to make it a bit more functional, by adding the possibility of
 ** selecting multiple styles at once, and removing them independently.
 ** The only way i found to do it so far is to print the codes everytime.
 ** Working on an smart implementation for that.
@@ -70,7 +91,6 @@ static int	get_style(const char *format, int len)
 
 int			ftpf_handle_display(const char **format, t_buf *buf, int len)
 {
-//	t_disp	display;
 	char	disp_code[7];
 
 	++*format;

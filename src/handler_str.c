@@ -38,10 +38,10 @@ static int		ft_wstrlen(wchar_t *str, t_par *p)
 		return (len);
 	}
 	else
-		return (p->precision < 6 ? p->precision : 6);
+		return (p->flags & F_PRECI && p->precision < 6 ? p->precision : 6);
 }
 
-static int		ftpf_buffer_wstr(wchar_t *str, t_par *p, t_buf *buf)
+static void		ftpf_buffer_wstr(wchar_t *str, t_par *p, t_buf *buf)
 {
 	char	tmp[5];
 	size_t	i;
@@ -57,22 +57,21 @@ static int		ftpf_buffer_wstr(wchar_t *str, t_par *p, t_buf *buf)
 		i += char_len;
 		++str;
 	}
-	return (1);
 }
 
 int				ftpf_handle_wstr(t_par *p, va_list ap, t_buf *buf)
 {
 	wchar_t	*str;
-	size_t	len;
+	int		len;
 
 	str = va_arg(ap, wchar_t*);
-	if (!(len = ft_wstrlen(str, p)) < 0)
+	if ((len = ft_wstrlen(str, p)) < 0)
 		return (0);
 	p->precision = len;
 	if (p->width > p->precision && !(p->flags & F_MINUS))
 		ftpf_buffer_fill(buf, p->flags & F_ZERO ? '0' : ' ',
 			p->width - p->precision);
-	if (!(str))
+	if (!str)
 		ftpf_buffer_copy("(null)", buf, p->precision);
 	else
 		ftpf_buffer_wstr(str, p, buf);

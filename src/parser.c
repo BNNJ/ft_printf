@@ -22,8 +22,6 @@ static t_fct	g_functable[127] = {NULL};
 
 static void		function_factory(void)
 {
-	t_fct	g_functable[127];
-
 	g_functable['d'] = ftpf_handle_int;
 	g_functable['D'] = ftpf_handle_int;
 	g_functable['i'] = ftpf_handle_int;
@@ -77,15 +75,15 @@ static int		no_conv(t_par *p, t_buf *buf, const char **format)
 
 static void		ftpf_flags_setup(t_par *p)
 {
-	if (p->flags & F_SPACE)
-		p->prefix[0] = ' ';
-	if (p->flags & F_PLUS)
-		p->prefix[0] = '+';
 	if (p->type == 'o' || p->type == 'O' || p->type == 'x' || p->type == 'X')
 	{
 		p->flags &= ~F_PLUS;
 		p->flags &= ~F_SPACE;
 	}
+	if (p->flags & F_SPACE)
+		p->prefix[0] = ' ';
+	if (p->flags & F_PLUS)
+		p->prefix[0] = '+';
 	if ((p->flags & F_PRECI && (ft_findchar("dDioOuUxXpPbB", p->type) >= 0))
 		|| !(p->flags & F_WIDTH) || p->flags & F_MINUS)
 		p->flags &= ~F_ZERO;
