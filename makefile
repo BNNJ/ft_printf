@@ -1,7 +1,7 @@
 NAME			=	libftprintf.a
 
 CC				=	gcc
-CFLAGS			=	-I$(INC_DIR) -g
+CFLAGS			=	-I$(INC_DIR)
 
 SRC_DIR			=	./src/
 SRCS			=	$(addprefix $(SRC_DIR), $(SRC))
