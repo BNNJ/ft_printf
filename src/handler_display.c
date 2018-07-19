@@ -12,12 +12,24 @@
 
 #include "ft_printf.h"
 
+/*
+** #########################################################################
+** Modify the graphic rendition through the used of CSI escape seauences.
+** Simply write  the options in a display tag %{}.
+** As many options can be put in a single tag, separated by ':'
+** The options are applied in order, following the same rule as the
+** regular CSI sequence : if conflicting options are entered, the last one
+** is kept.
+** #########################################################################
+*/
+
 static char	g_displaytable[18][10];
 
 static void	ftpf_init_table(void)
 {
 	ft_memcpy(g_displaytable[0], "reset", 5);
 	ft_memcpy(g_displaytable[1], "bold", 4);
+	ft_memcpy(g_displaytable[2], "faint", 5);
 	ft_memcpy(g_displaytable[3], "italic", 6);
 	ft_memcpy(g_displaytable[4], "underline", 9);
 	ft_memcpy(g_displaytable[5], "/bold", 5);
@@ -46,6 +58,13 @@ static int	ft_strncmp(const char *s1, const char *s2, size_t n)
 	}
 	return ((unsigned char)*s1 - (unsigned char)*s2);
 }
+
+/*
+** Compare a substring of format (but not really a substring) with
+** the references in the array to get the index.
+** That index is then incremented to get the code we need to
+** write in the buffer to get the effect we want.
+*/
 
 static int	ftpf_get_option(const char **format)
 {
@@ -83,6 +102,10 @@ static void	ftpf_buffer_display(t_buf *buf, int option)
 		ftpf_buffer_fill(buf, option % 10 + '0', 1);
 	}
 }
+
+/*
+** Write the fixed parts of the sequence, and the codes in between.
+*/
 
 int			ftpf_handle_display(const char **format, t_buf *buf, int len)
 {

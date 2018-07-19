@@ -12,6 +12,11 @@
 
 #include "ft_printf.h"
 
+/*
+** convert the unicode character into a multibyte character,
+** and stores everything into a buffer.
+*/
+
 int			ftpf_convert_wchar(wchar_t c, char *str)
 {
 	if (c < -1 || (c >= 0xd800 && c <= 0xdfff) || c > 0x10ffff)
@@ -53,6 +58,11 @@ char		ftpf_wchar_len(wchar_t c)
 		|| len > MB_CUR_MAX) ? -1 : len);
 }
 
+/*
+** write the multibyte character from the conversion above to the buffer,
+** and add all the fixin'
+*/
+
 int			ftpf_handle_wchar(t_par *p, va_list ap, t_buf *buf)
 {
 	wchar_t	c;
@@ -78,6 +88,12 @@ int			ftpf_handle_wchar(t_par *p, va_list ap, t_buf *buf)
 	}
 	return (1);
 }
+
+/*
+** Redirect to apprioriate functions in case of wide char or
+** or if the binflag is enabled.
+** Otherwise, write the char in the buffer, and add the necessary padding.
+*/
 
 int			ftpf_handle_char(t_par *p, va_list ap, t_buf *buf)
 {

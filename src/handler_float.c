@@ -31,6 +31,10 @@ static double		ft_pow10(int pow)
 	return (result);
 }
 
+/*
+** Converts the floating part to an int.
+*/
+
 static uintmax_t	ftpf_dectoi(double f, t_par *p)
 {
 	uintmax_t	n;
@@ -56,6 +60,10 @@ static uintmax_t	ftpf_dectoi(double f, t_par *p)
 	}
 	return (n);
 }
+
+/*
+** Split the float into two ints, treated separately.
+*/
 
 static void			ftpf_ftoa(double f, size_t len, t_par *p, t_buf *buf)
 {

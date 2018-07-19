@@ -36,6 +36,10 @@ static int	ftpf_strjoin(t_buf *buf)
 	return (1);
 }
 
+/*
+** strmode 0 for regular printf, 1 for asprintf, and 2 for sprintf
+*/
+
 void		ftpf_buffer_flush(t_buf *buf)
 {
 	if (buf->strmode == 0)

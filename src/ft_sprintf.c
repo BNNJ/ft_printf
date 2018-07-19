@@ -12,6 +12,10 @@
 
 #include "ft_printf.h"
 
+/*
+** allocate a string to store the formated output into
+*/
+
 int		ft_asprintf(char **str, const char *format, ...)
 {
 	t_buf	buf;
@@ -30,6 +34,11 @@ int		ft_asprintf(char **str, const char *format, ...)
 	*str = *buf.str;
 	return (ret);
 }
+
+/*
+** store the formated string into a string given as parameter.
+** The string must be big enough to hold everything.
+*/
 
 int		ft_sprintf(char *str, const char *format, ...)
 {

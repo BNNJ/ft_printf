@@ -37,6 +37,11 @@ int		ftpf_handle_ptr(t_par *p, va_list ap, t_buf *buf)
 	return (1);
 }
 
+/*
+** Stores the number of characters written so far into the int pointed to by
+** the argument. No conversion is done.
+*/
+
 int		ftpf_handle_n(t_par *p, va_list ap, t_buf *buf)
 {
 	buf->ret += write(1, buf->content, buf->cursor);

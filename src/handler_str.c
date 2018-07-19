@@ -12,6 +12,15 @@
 
 #include "ft_printf.h"
 
+/*
+** Returns the number of bytes to be written into the buffer.
+** If a precision was given, make sure not to cut a multibyte char,
+** by checking if the length of each character after conversion bring the total
+** length above the precision.
+** If the argument is NULL, sets the default precision to 6, unless a precision
+** was given.
+*/
+
 static int		ft_wstrlen(wchar_t *str, t_par *p)
 {
 	int	len;

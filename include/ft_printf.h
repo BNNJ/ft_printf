@@ -18,7 +18,7 @@
 # define BUFFSIZE 128
 
 # ifndef UINTMAX_WIDTH
-#  define UINTMAX_WIDTH sizeof(uintmax_t) * 8
+#  define UINTMAX_WIDTH 64 * 8
 # endif
 
 # define UCBASE "0123456789ABCDEF"
