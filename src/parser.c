@@ -14,7 +14,7 @@
 
 /*
 ** Yes, it's a global array. It's not absolutely necessary, but it's faster.
-** It obviously uses the conversion specifiers as indexes, 
+** It obviously uses the conversion specifiers as indexes,
 ** to match them with the proper functions.
 */
 
@@ -45,7 +45,7 @@ static void		function_factory(void)
 }
 
 /*
-** if no conversion specifier is found, print the char that's where 
+** if no conversion specifier is found, print the char that's where
 ** the specifier should be. With width and precision applied to it.
 ** Unless it's a null character.
 */
@@ -95,9 +95,10 @@ static void		ftpf_flags_setup(t_par *p)
 
 /*
 ** First check for the display handling flag,
-** then calls the option parsing functions.
-** Repeat the format flag function, just in case the user is stupid and
-** put flags in random places.
+** then call the option parsing functions.
+** Get type, throw it against the function pointers array and what sticks.
+** If nothing does, then call no_conv, using the false conversion specifier
+** as character.
 */
 
 static int		ftpf_majortom(const char **format, t_par *p,
@@ -108,13 +109,7 @@ static int		ftpf_majortom(const char **format, t_par *p,
 	++*format;
 	if (**format == '{' && (i = ft_findchar(*format, '}')) >= 0)
 		return (ftpf_handle_display(format, buf, i));
-	ftpf_get_format_flag(p, format);
-	ftpf_get_width(p, format, ap);
-	ftpf_get_format_flag(p, format);
-	ftpf_get_precision(p, format, ap);
-	ftpf_get_format_flag(p, format);
-	ftpf_get_size_flag(p, format);
-	ftpf_get_format_flag(p, format);
+	ftpf_get_flags(p, format, ap);
 	ftpf_get_type(p, format);
 	ftpf_flags_setup(p);
 	return (!g_functable[p->type]
@@ -123,28 +118,29 @@ static int		ftpf_majortom(const char **format, t_par *p,
 }
 
 /*
-** 
+** setup the buffer and parameters structs,
+** parse format for conversion placeholders or literals
+** call the appropriate function.
+** flush the buffer at the end or in case of error
+** (anything that shouldn't be printed supposedly isn't in the buffer)
 */
 
-int				ftpf_groundcontrol(const char *format, va_list ap, char opt)
+int				ftpf_groundcontrol(const char *format, va_list ap, t_buf *buf)
 {
 	t_par	p;
-	t_buf	buf;
 
-	ft_memset(&buf, 0, sizeof(buf));
-	buf.strmode = opt;
 	function_factory();
 	while (*format)
 	{
 		ft_memset(&p, 0, sizeof(p));
 		if (*format != '%')
-			format += ftpf_buffer_literal(format, &buf);
-		else if (!(ftpf_majortom(&format, &p, &buf, ap)))
+			format += ftpf_buffer_literal(format, buf);
+		else if (!(ftpf_majortom(&format, &p, buf, ap)))
 		{
-			write(1, buf.content, buf.cursor);
+			ftpf_buffer_flush(buf);
 			return (-1);
 		}
 	}
-	buf.ret += write(1, buf.content, buf.cursor);
-	return (buf.ret);
+	ftpf_buffer_flush(buf);
+	return (buf->ret);
 }

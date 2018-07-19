@@ -1,11 +1,12 @@
 NAME			=	libftprintf.a
 
 CC				=	gcc
-CFLAGS			=	-I$(INC_DIR)
+CFLAGS			=	-I$(INC_DIR) -g
 
 SRC_DIR			=	./src/
 SRCS			=	$(addprefix $(SRC_DIR), $(SRC))
 SRC				=	ft_printf.c			\
+					ft_sprintf.c		\
 					handler_binflag.c	\
 					handler_buffer.c	\
 					handler_char.c		\

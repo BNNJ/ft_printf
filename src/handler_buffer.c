@@ -27,19 +27,27 @@ static int	ftpf_strjoin(t_buf *buf)
 
 	if (!(new_str = (char*)malloc(buf->ret + buf->cursor)))
 		return (0);
-	ft_memcpy(new_str, buf->str, buf->ret);
+	ft_memcpy(new_str, *buf->str, buf->ret);
 	ft_memcpy(new_str + buf->ret, buf->content, buf->cursor);
-	free(buf->str);
-	buf->str = new_str;
+	new_str[buf->ret + buf->cursor] = '\0';
+	if (*buf->str)
+		free(*buf->str);
+	*buf->str = new_str;
 	return (1);
 }
 
 void		ftpf_buffer_flush(t_buf *buf)
 {
-	if (buf->strmode)
+	if (buf->strmode == 0)
+		buf->ret += write(buf->fd, buf->content, buf->cursor);
+	else if (buf->strmode == 1)
 		buf->ret += ftpf_strjoin(buf);
-	else
-		buf->ret += write(1, buf->content, buf->cursor);
+	else if (buf->strmode == 2)
+	{
+		ft_memcpy(*(buf->str) + buf->ret, buf->content, buf->cursor + 1);
+		(*buf->str)[buf->ret + buf->cursor] = 0;
+		buf->ret += buf->cursor;
+	}
 	buf->cursor = 0;
 }
 

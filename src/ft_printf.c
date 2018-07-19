@@ -12,13 +12,23 @@
 
 #include "ft_printf.h"
 
+int		ft_vfprintf(int fd, const char *format, va_list ap)
+{
+	t_buf	buf;
+
+	ft_memset(&buf, 0, sizeof(buf));
+	buf.strmode = 0;
+	buf.fd = fd;
+	return (ftpf_groundcontrol(format, ap, &buf));
+}
+
 int		ft_printf(const char *format, ...)
 {
 	va_list	ap;
 	int		ret;
 
 	va_start(ap, format);
-	ret = ftpf_groundcontrol(format, ap, 0);
+	ret = ft_vfprintf(1, format, ap);
 	va_end(ap);
 	return (ret);
 }

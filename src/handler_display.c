@@ -53,8 +53,9 @@ static int	ftpf_get_option(const char **format)
 	int	len;
 
 	i = 0;
-	if ((len = ft_findchar(*format, ':')) < 0)
-		len = ft_findchar(*format, '}');
+	len = ft_findchar(*format, ':');
+	len = len < ft_findchar(*format, '}') && len > 0
+		? len : ft_findchar(*format, '}');
 	while (i <= 18)
 	{
 		if (!ft_strncmp(g_displaytable[i], *format, len))
@@ -72,7 +73,7 @@ static int	ftpf_get_option(const char **format)
 	return (-1);
 }
 
-static void	ftpf_buffer_display(t_buf *buf, int	option)
+static void	ftpf_buffer_display(t_buf *buf, int option)
 {
 	if (option <= 9)
 		ftpf_buffer_fill(buf, option + '0', 1);

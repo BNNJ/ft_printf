@@ -18,7 +18,7 @@
 # define BUFFSIZE 128
 
 # ifndef UINTMAX_WIDTH
-#  define UINTMAX_WIDTH 64 * 8
+#  define UINTMAX_WIDTH sizeof(uintmax_t) * 8
 # endif
 
 # define UCBASE "0123456789ABCDEF"
@@ -47,8 +47,9 @@ typedef struct	s_buf
 {
 	char		content[BUFFSIZE];
 	int			cursor;
-	char		*str;
+	char		**str;
 	char		strmode;
+	int			fd;
 	int			ret;
 }				t_buf;
 
@@ -79,17 +80,26 @@ typedef int		(*t_fct)(t_par*, va_list, t_buf*);
 */
 
 int				ft_printf(const char *format, ...);
+int				ft_vfprintf(int fd, const char *format, va_list ap);
+
+/*
+** ft_sprintf.c
+*/
+
+int				ft_asprintf(char **str, const char *format, ...);
+int				ft_sprintf(char *str, const char *format, ...);
 
 /*
 ** parser.c
 */
 
-int				ftpf_groundcontrol(const char *format, va_list ap, char opt);
+int				ftpf_groundcontrol(const char *format, va_list ap, t_buf *buf);
 
 /*
 ** parser_flags.c
 */
 
+void			ftpf_get_flags(t_par *p, const char **format, va_list ap);
 void			ftpf_get_format_flag(t_par *p, const char **format);
 void			ftpf_get_width(t_par *p, const char **format, va_list ap);
 void			ftpf_get_precision(t_par *p, const char **format, va_list ap);
@@ -100,6 +110,7 @@ void			ftpf_get_type(t_par *p, const char **format);
 ** handler_buffer.c
 */
 
+void			ftpf_buffer_flush(t_buf *buf);
 int				ftpf_buffer_literal(const char *str, t_buf *buf);
 void			ftpf_buffer_copy(const char *str, t_buf *buf, int precision);
 void			ftpf_buffer_fill(t_buf *buf, char c, size_t size);
@@ -118,7 +129,6 @@ int				ftpf_convert_wchar(wchar_t c, char *str);
 int				ftpf_handle_wchar(t_par *p, va_list ap, t_buf *buf);
 int				ftpf_handle_char(t_par *p, va_list ap, t_buf *buf);
 char			ftpf_wchar_len(wchar_t c);
-
 
 /*
 ** handler_str.c
