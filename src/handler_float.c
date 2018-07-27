@@ -102,15 +102,15 @@ static size_t		ftpf_setup_float(double f, t_par *p)
 
 int					ftpf_handle_float(t_par *p, va_list ap, t_buf *buf)
 {
-	double	f;
-	size_t	len;
+	long double	f;
+	size_t		len;
 
-	f = va_arg(ap, double);
+	f = va_arg(ap, long double);
 	if (p->flags & F_BIN)
 	{
-		return (p->type == 'F'
-			? ftpf_handle_bin(&f, p, buf)
-			: ftpf_handle_bin((float*)&f, p, buf));
+		return (p->type == 'f'
+			? ftpf_handle_bin((float*)&f, p, buf)
+			: ftpf_handle_bin(&f, p, buf));
 	}
 	len = ftpf_setup_float(f, p);
 	if (p->flags & F_WIDTH)

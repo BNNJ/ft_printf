@@ -17,24 +17,24 @@ int		ftpf_handle_int_array(t_par *p, va_list ap, t_buf *buf)
 	size_t	size;
 	size_t	i;
 	int		*array;
-	int		tmp;
+	long	tmp;
 
 	i = 0;
 	array = va_arg(ap, int*);
 	size = va_arg(ap, size_t);
-	p->base = 10;
 	while (i < size)
 	{
 		p->precision = 1;
-		if (array[i] < 0)
-		{
-			array[i] *= -1;
-			ftpf_buffer_fill(buf, '-', 1);
-		}
-		tmp = array[i];
+		tmp = (long)array[i];
 		while (tmp /= 10)
 			++p->precision;
-		ftpf_umaxtoa_base(array[i++], p->precision, p, buf);
+		tmp = (long)array[i++];
+		if (tmp < 0)
+		{
+			tmp *= -1;
+			ftpf_buffer_fill(buf, '-', 1);
+		}
+		ftpf_umaxtoa_base(tmp, p->precision, p, buf);
 		if (i < size)
 			ftpf_buffer_literal(p->flags & F_HASH ? ", " : "\n", buf);
 	}

@@ -35,6 +35,7 @@ static void		function_factory(void)
 	g_functable['B'] = ftpf_handle_int;
 	g_functable['f'] = ftpf_handle_float;
 	g_functable['F'] = ftpf_handle_float;
+	g_functable['L'] = ftpf_handle_float;
 	g_functable['c'] = ftpf_handle_char;
 	g_functable['C'] = ftpf_handle_wchar;
 	g_functable['s'] = ftpf_handle_str;
