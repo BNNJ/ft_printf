@@ -55,3 +55,20 @@ int		ft_sprintf(char *str, const char *format, ...)
 	va_end(ap);
 	return (ret);
 }
+
+int		ft_snprintf(char *str, size_t size, const char *format, ...)
+{
+	va_list	ap;
+	t_buf	buf;
+	int		ret;
+
+	ft_memset(&buf, 0, sizeof(buf));
+	buf.strmode = 3;
+	buf.fd = 1;
+	buf.str = &str;
+	buf.max_len = size;
+	va_start(ap, format);
+	ret = ftpf_groundcontrol(format, ap, &buf);
+	va_end(ap);
+	return (ret);
+}

@@ -42,6 +42,9 @@ static void		function_factory(void)
 	g_functable['p'] = ftpf_handle_ptr;
 	g_functable['P'] = ftpf_handle_ptr;
 	g_functable['n'] = ftpf_handle_n;
+	g_functable['y'] = ftpf_handle_file;
+	g_functable['t'] = ftpf_handle_int_array;
+	g_functable['w'] = ftpf_handle_str_array;
 }
 
 /*

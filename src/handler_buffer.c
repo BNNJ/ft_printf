@@ -46,9 +46,11 @@ void		ftpf_buffer_flush(t_buf *buf)
 		buf->ret += write(buf->fd, buf->content, buf->cursor);
 	else if (buf->strmode == 1)
 		buf->ret += ftpf_strjoin(buf);
-	else if (buf->strmode == 2)
+	else if (buf->strmode == 2 || buf->strmode == 3)
 	{
-		ft_memcpy(*(buf->str) + buf->ret, buf->content, buf->cursor + 1);
+		if (buf->strmode == 3 && buf->ret + buf->cursor >= buf->max_len)
+			buf->cursor = buf->max_len - buf->ret;
+		ft_memcpy(*(buf->str) + buf->ret, buf->content, buf->cursor);
 		(*buf->str)[buf->ret + buf->cursor] = 0;
 		buf->ret += buf->cursor;
 	}
@@ -64,7 +66,8 @@ int			ftpf_buffer_literal(const char *str, t_buf *buf)
 	int	i;
 
 	i = 0;
-	while (str[i] && str[i] != '%')
+	while (str[i] && str[i] != '%'
+		&& !(buf->strmode == 3 && buf->ret + i >= buf->max_len))
 	{
 		if (buf->cursor == BUFFSIZE)
 			ftpf_buffer_flush(buf);
@@ -84,7 +87,8 @@ void		ftpf_buffer_copy(const char *str, t_buf *buf, int precision)
 	int	i;
 
 	i = 0;
-	while (i < precision && str[i])
+	while (i < precision && str[i]
+		&& !(buf->strmode == 3 && buf->ret + i >= buf->max_len))
 	{
 		if (buf->cursor == BUFFSIZE)
 			ftpf_buffer_flush(buf);
@@ -100,12 +104,15 @@ void		ftpf_buffer_copy(const char *str, t_buf *buf, int precision)
 
 void		ftpf_buffer_fill(t_buf *buf, char c, size_t size)
 {
-	while (size > 0)
+	int	i;
+
+	i = 0;
+	while (i < size && !(buf->strmode == 3 && buf->ret + i >= buf->max_len))
 	{
 		if (buf->cursor == BUFFSIZE)
 			ftpf_buffer_flush(buf);
 		buf->content[buf->cursor] = c;
 		++buf->cursor;
-		--size;
+		--i;
 	}
 }

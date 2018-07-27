@@ -7,10 +7,12 @@ SRC_DIR			=	./src/
 SRCS			=	$(addprefix $(SRC_DIR), $(SRC))
 SRC				=	ft_printf.c			\
 					ft_sprintf.c		\
+					handler_array.c		\
 					handler_binflag.c	\
 					handler_buffer.c	\
 					handler_char.c		\
 					handler_display.c	\
+					handler_file.c		\
 					handler_float.c		\
 					handler_int.c		\
 					handler_ptr.c		\

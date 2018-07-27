@@ -44,8 +44,7 @@ int		ftpf_handle_ptr(t_par *p, va_list ap, t_buf *buf)
 
 int		ftpf_handle_n(t_par *p, va_list ap, t_buf *buf)
 {
-	buf->ret += write(1, buf->content, buf->cursor);
-	buf->cursor = 0;
+	ftpf_buffer_flush(buf);
 	if (p->e_mod == H)
 		*va_arg(ap, char*) = (char)buf->ret;
 	else if (p->e_mod == HH)

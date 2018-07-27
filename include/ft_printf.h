@@ -18,7 +18,7 @@
 # define BUFFSIZE 128
 
 # ifndef UINTMAX_WIDTH
-#  define UINTMAX_WIDTH 64 * 8
+#  define UINTMAX_WIDTH sizeof(uintmax_t) * 8
 # endif
 
 # define UCBASE "0123456789ABCDEF"
@@ -41,7 +41,7 @@
 # include <stdarg.h>
 # include <wchar.h>
 # include <stdint.h>
-# include <stdio.h>
+# include <fcntl.h>
 
 typedef struct	s_buf
 {
@@ -50,6 +50,7 @@ typedef struct	s_buf
 	char		**str;
 	char		strmode;
 	int			fd;
+	size_t		max_len;
 	int			ret;
 }				t_buf;
 
@@ -88,6 +89,7 @@ int				ft_vfprintf(int fd, const char *format, va_list ap);
 
 int				ft_asprintf(char **str, const char *format, ...);
 int				ft_sprintf(char *str, const char *format, ...);
+int				ft_snprintf(char *str, size_t size, const char *format, ...);
 
 /*
 ** parser.c
@@ -157,6 +159,19 @@ int				ftpf_handle_float(t_par *p, va_list ap, t_buf *buf);
 
 int				ftpf_handle_ptr(t_par *p, va_list ap, t_buf *buf);
 int				ftpf_handle_n(t_par *p, va_list ap, t_buf *buf);
+
+/*
+** handler_file.c
+*/
+
+int				ftpf_handle_file(t_par *par, va_list ap, t_buf *buf);
+
+/*
+** handler_array.c
+*/
+
+int				ftpf_handle_int_array(t_par *par, va_list ap, t_buf *buf);
+int				ftpf_handle_str_array(t_par *par, va_list ap, t_buf *buf);
 
 /*
 ** handler_binflag.c
